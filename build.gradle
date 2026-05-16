@@ -1,0 +1,90 @@
+// =============================================================================
+// 이 파일은 Fabric Loom 기반 모드의 Gradle 빌드 스크립트입니다.
+// 역할: 플러그인 적용, Minecraft 의존성, 리매핑, 리소스 치환, Java 21 타깃, JAR·배포 설정.
+// =============================================================================
+
+plugins {
+	// Fabric Loom (리매핑 플러그인 id는 fabric-loom-remap). 버전은 gradle.properties의 loom_version.
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+	// Maven 로컬/원격 저장소에 JAR을 올릴 때 쓰는 표준 Gradle 퍼블리싱 (선택 사용).
+	id 'maven-publish'
+}
+
+// 프로젝트 좌표: Maven 배포 시 artifactId는 보통 rootProject.name(helloworld)을 따릅니다.
+version = project.mod_version
+group = project.maven_group
+
+// 추가 Maven 저장소가 필요할 때만 채웁니다. 바닐라+Fabric은 Loom이 기본 저장소를 넣습니다.
+repositories {
+}
+
+loom {
+	// main / client 소스 셋을 분리해, 서버 JAR에 클라이언트 코드가 섞이지 않게 합니다.
+	splitEnvironmentSourceSets()
+
+	mods {
+		// 이 블록 이름은 모드 ID와 같게 두는 관례입니다. 소스 셋을 하나의 모드 모듈로 묶습니다.
+		helloworld {
+			// 공통(서버에서도 로드되는) 코드·리소스.
+			sourceSet sourceSets.main
+			// 클라이언트 전용 코드·리소스 (Mixin 포함).
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+dependencies {
+	// 바닐라 게임 JAR — decompile/매핑의 입력이 됩니다.
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	// 공식 Mojang 매핑 — 메서드 이름이 Yarn과 다릅니다(예: startAttack).
+	mappings loom.officialMojangMappings()
+	// Fabric Loader — 런타임에 모드를 로드합니다.
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	// Fabric API — 다른 모드와의 호환·유틸을 위해 예제와 동일하게 포함합니다.
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+processResources {
+	// fabric.mod.json 안의 ${version} 플레이스홀더를 실제 버전 문자열로 치환합니다.
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	// 바이트코드 타깃 릴리스 — Minecraft 1.21.x는 Java 21이 필요합니다.
+	it.options.release = 21
+}
+
+java {
+	// 소스 JAR를 함께 생성해 IDE 디버깅·배포에 도움을 줍니다.
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+	def projectName = project.name
+	inputs.property "projectName", projectName
+
+	// 빌드 산출 JAR 안에 LICENSE 사본을 넣고, 파일명에 프로젝트 이름을 붙입니다.
+	from("LICENSE") {
+		rename { "${it}_$projectName" }
+	}
+}
+
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			from components.java
+		}
+	}
+
+	repositories {
+	}
+}
