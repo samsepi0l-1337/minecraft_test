@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "helloworld",
+	"version": "${version}",
+	"name": "Hello World Click",
+	"description": "Prints hello world to chat when you left-click (attack).",
+	"authors": [
+		"You"
+	],
+	"license": "CC0-1.0",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.example.helloworld.HelloWorldMod"
+		],
+		"client": [
+			"com.example.helloworld.client.HelloWorldClient"
+		]
+	},
+	"mixins": [
+		{
+			"config": "helloworld.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.2",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"custom": {
+		"documentation_ko": "이 파일(fabric.mod.json)은 Fabric 로더가 모드를 식별·로드할 때 읽는 메타데이터입니다.\n\n- schemaVersion: 메타데이터 포맷 버전(1 고정).\n- id: 모드 고유 ID. 코드의 MOD_ID·소스 폴더명과 일치시키는 것이 안전합니다.\n- version: Gradle processResources가 ${version}을 mod_version으로 치환합니다.\n- name/description: 사용자에게 보이는 표시용 문자열입니다.\n- environment: * 는 클라·서버 모두에서 로드 가능함을 의미합니다.\n- entrypoints.main: 서버 포함 공통 초기화 클래스(HelloWorldMod).\n- entrypoints.client: 클라이언트 전용 초기화 클래스(HelloWorldClient).\n- mixins: 클라이언트 전용 Mixin 설정 JSON 경로와 environment: client 지정.\n- depends: 로더·게임·Java·Fabric API에 대한 최소 요구 버전 범위입니다."
+	}
+}
