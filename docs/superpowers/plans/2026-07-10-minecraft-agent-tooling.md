@@ -4,7 +4,7 @@
 
 ## Local completion — 2026-07-11
 
-The implementation and local verification are complete. Public delivery is the next recorded step; the exact remote commit and `HEAD == origin/main` evidence will be appended after the push succeeds.
+The implementation, verification, and public delivery are complete.
 
 ### Delivered package
 
@@ -21,6 +21,14 @@ The implementation and local verification are complete. Public delivery is the n
 - Source and installed-cache skill validation, plugin install/list, JSON parsing, credential-pattern scan, executable syntax, lifecycle-hook behavior, `git diff --check`, `./gradlew check`, `./gradlew build`, and remapped JAR inspection: passed.
 - The current repository hook reports Fabric `1.21.1`, Java `21`, Mojang official mappings, Gradle `9.4.1`, Loader `0.19.2`, Loom `1.16-SNAPSHOT`, and Fabric API `0.116.12+1.21.1`.
 - `GITHUB_PAT_TOKEN` remains unset, so the optional authenticated GitHub MCP connection was not exercised; no credential is stored in the repository.
+
+### Public delivery
+
+- Implementation delivery commit: `70e8c715384c7cf093b62f284043908fa5bd661e` (`fix: harden Minecraft project inspection`).
+- Pushed the complete three-commit tooling series from `cd0192f` through `70e8c71` to `origin/main`.
+- Verified `HEAD == origin/main` at the implementation delivery commit.
+- Verified [samsepi0l-1337/minecraft_test](https://github.com/samsepi0l-1337/minecraft_test) is `PUBLIC` with default branch `main`.
+- The final progress-record commit is documentation-only and is followed by a second local/remote hash verification.
 
 ## Historical progress checkpoint — 2026-07-10
 
@@ -250,7 +258,7 @@ Expected: all validation commands exit `0` and only intended files are listed.
 
 Ask a fresh reviewer to compare the diff with the design, ecosystem coverage, security rules, plugin schema, and fresh test evidence. Resolve every critical or important finding.
 
-- [ ] **Step 3: Commit and push**
+- [x] **Step 3: Commit and push**
 
 Run:
 
@@ -260,7 +268,7 @@ git commit -m "feat: add comprehensive Minecraft agent tooling"
 git push origin main
 ```
 
-- [ ] **Step 4: Verify public remote state**
+- [x] **Step 4: Verify public remote state**
 
 Compare `HEAD` with `origin/main` and query `gh repo view samsepi0l-1337/minecraft_test --json visibility,url,defaultBranchRef`.
 
