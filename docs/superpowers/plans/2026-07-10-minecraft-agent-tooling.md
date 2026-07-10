@@ -2,9 +2,29 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-## Progress checkpoint — 2026-07-10
+## Local completion — 2026-07-11
 
-Work intentionally stopped at the user's request. This checkpoint is not a completion claim and has not been pushed publicly.
+The implementation and local verification are complete. Public delivery is the next recorded step; the exact remote commit and `HEAD == origin/main` evidence will be appended after the push succeeds.
+
+### Delivered package
+
+- Repo-local `minecraft-dev` marketplace plugin with Context7 and optional read-only GitHub MCP configuration, five specialist agents, one routing skill, nine progressive-disclosure references, lifecycle hooks, and a dependency-free project inspector.
+- Detection and guidance for Fabric, Quilt, Forge, NeoForge, Bukkit, Spigot, Paper, Purpur, Folia, Velocity, BungeeCord, Waterfall, Sponge, and Architectury-style cross-loader projects.
+- Bounded project ownership, symlink, file-count, text-budget, metadata-sanitization, Maven inheritance, Gradle version-catalog, applied-plugin, mappings, and false-positive protections.
+
+### Final local evidence
+
+- Node package and inspector suite: `114/114` passed.
+- Inspector SHA256: `0c04f35713660c41e7c844056a2ceaa5a90dbf8453fa98c91b3039dc52a3601f`.
+- Inspector-test SHA256: `12c16629463e141782b80908d6c288f846bc7921ec87b48d28faaa6bcf0e7b9f`.
+- Two independent reviewers plus the architecture lane: `APPROVE`, with no Critical or Important findings remaining.
+- Source and installed-cache skill validation, plugin install/list, JSON parsing, credential-pattern scan, executable syntax, lifecycle-hook behavior, `git diff --check`, `./gradlew check`, `./gradlew build`, and remapped JAR inspection: passed.
+- The current repository hook reports Fabric `1.21.1`, Java `21`, Mojang official mappings, Gradle `9.4.1`, Loader `0.19.2`, Loom `1.16-SNAPSHOT`, and Fabric API `0.116.12+1.21.1`.
+- `GITHUB_PAT_TOKEN` remains unset, so the optional authenticated GitHub MCP connection was not exercised; no credential is stored in the repository.
+
+## Historical progress checkpoint — 2026-07-10
+
+This superseded checkpoint records the point where work was intentionally stopped at the user's earlier request. It was not a completion claim and had not been pushed publicly at that time.
 
 ### Completed
 
@@ -57,7 +77,7 @@ Work intentionally stopped at the user's request. This checkpoint is not a compl
 - Consumes: repository files and plugin JSON/YAML/Markdown.
 - Produces: Node tests proving the marketplace, manifest, MCP allow-list, five agents, routing skill, nine references, hooks, and secret policy.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Assert exact names and security properties:
 
@@ -70,7 +90,7 @@ assert.equal(mcp.mcpServers.github.bearer_token_env_var, "GITHUB_PAT_TOKEN");
 assert.doesNotMatch(serializedConfig, /gh[pousr]_|Bearer\s+[A-Za-z0-9]/);
 ```
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run: `node --test tests/agent-tooling.test.mjs`
 
@@ -103,11 +123,11 @@ Expected: FAIL because `.agents/plugins/marketplace.json` and `plugins/minecraft
 - Consumes: detected build/manifests and official documentation URLs.
 - Produces: installable `minecraft-dev`, triggerable `minecraft-java-development`, and five role prompts.
 
-- [ ] **Step 1: Generate the plugin skeleton**
+- [x] **Step 1: Generate the plugin skeleton**
 
 Run the installed `plugin-creator` scaffold with `--path "$PWD/plugins"`, `--marketplace-path "$PWD/.agents/plugins/marketplace.json"`, `--with-skills`, `--with-hooks`, `--with-scripts`, `--with-mcp`, `--with-marketplace`, and category `Developer Tools`.
 
-- [ ] **Step 2: Replace generated placeholders**
+- [x] **Step 2: Replace generated placeholders**
 
 Use version `0.1.0`, repository `https://github.com/samsepi0l-1337/minecraft_test`, marketplace name `minecraft-test`, and:
 
@@ -124,11 +144,11 @@ Use version `0.1.0`, repository `https://github.com/samsepi0l-1337/minecraft_tes
 }
 ```
 
-- [ ] **Step 3: Add progressive-disclosure guidance**
+- [x] **Step 3: Add progressive-disclosure guidance**
 
 Keep `SKILL.md` focused on detection, routing, safety, implementation, and verification. Put loader/platform-specific lifecycle, mappings, manifests, schedulers, resources, and test commands in the nine direct reference files.
 
-- [ ] **Step 4: Verify the package contract**
+- [x] **Step 4: Verify the package contract**
 
 Run: `node --test tests/agent-tooling.test.mjs`
 
@@ -145,21 +165,21 @@ Expected: the static package contract passes after all package files exist.
 - Produces: `findProjectRoot(startPath)`, `parseProperties(text)`, `inspectMinecraftProject(root)`, `isRelevantEdit(path)`, and `renderSessionContext(report)`.
 - Consumes: those functions from the hook CLI entry point.
 
-- [ ] **Step 1: Write failing unit and fixture tests**
+- [x] **Step 1: Write failing unit and fixture tests**
 
 Cover upward root discovery, Gradle properties, current Fabric 1.21.1, Fabric, Quilt, Forge, NeoForge, Paper, Velocity, Bungee, Sponge, cross-loader ambiguity, malformed JSON, outside-project silence, relevant-edit filtering, and irrelevant-edit no-op behavior.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run: `node --test tests/minecraft-project-inspector.test.mjs`
 
 Expected: FAIL with `ERR_MODULE_NOT_FOUND` for `minecraft-project-inspector.mjs`.
 
-- [ ] **Step 3: Implement detection and hooks**
+- [x] **Step 3: Implement detection and hooks**
 
 Use only `node:fs`, `node:path`, and `node:url`. Recognize JSON manifests by parsing and TOML/YAML manifests by conservative key/coordinate evidence. `SessionStart` prints observed ecosystem/build/version/JDK/mappings/module facts. `PostToolUse` reads bounded JSON input, re-runs detection only after build/manifest edits, and fails open on malformed input.
 
-- [ ] **Step 4: Verify GREEN and real behavior**
+- [x] **Step 4: Verify GREEN and real behavior**
 
 Run:
 
@@ -182,15 +202,15 @@ Expected: tests pass; session output reports only Fabric, Minecraft 1.21.1, Moja
 - Consumes: marketplace/plugin names, supported ecosystem list, and wrapper conventions.
 - Produces: contributor rules, install commands, credential guidance, and runtime ignores.
 
-- [ ] **Step 1: Document workflow and platform matrix**
+- [x] **Step 1: Document workflow and platform matrix**
 
 Document `codex plugin marketplace add "$PWD"`, `codex plugin add minecraft-dev@minecraft-test`, optional `GITHUB_PAT_TOKEN`, ecosystem detection, official-source policy, Node tests, and wrapper-based project verification.
 
-- [ ] **Step 2: Extend ignore rules**
+- [x] **Step 2: Extend ignore rules**
 
 Ignore `run/`, `.idea/`, `*.iml`, local environment files, server worlds/logs/crashes, and EULA files while preserving tracked `.agents/` metadata.
 
-- [ ] **Step 3: Validate and install**
+- [x] **Step 3: Validate and install**
 
 Run:
 
@@ -212,7 +232,7 @@ Expected: skill validation succeeds and `minecraft-dev@minecraft-test` is instal
 - Consumes: every prior deliverable.
 - Produces: independent review, clean implementation commit, pushed `origin/main`, and public remote evidence.
 
-- [ ] **Step 1: Run full verification**
+- [x] **Step 1: Run full verification**
 
 Run:
 
@@ -226,7 +246,7 @@ git status --short
 
 Expected: all validation commands exit `0` and only intended files are listed.
 
-- [ ] **Step 2: Request independent review**
+- [x] **Step 2: Request independent review**
 
 Ask a fresh reviewer to compare the diff with the design, ecosystem coverage, security rules, plugin schema, and fresh test evidence. Resolve every critical or important finding.
 
