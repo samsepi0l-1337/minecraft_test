@@ -1,0 +1,6 @@
+interface:
+  display_name: Minecraft Java Development
+  short_description: Build and verify Minecraft Java mods and plugins
+  default_prompt: Detect this repository's Minecraft platform and version contract, use matching official guidance, implement the requested change, and verify the correct artifact.
+policy:
+  allow_implicit_invocation: true

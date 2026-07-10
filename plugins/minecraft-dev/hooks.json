@@ -1,0 +1,29 @@
+{
+  "description": "Adds repository-aware Minecraft Java platform context after session start and relevant metadata edits.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/scripts/minecraft-project-inspector.mjs\" SessionStart",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/scripts/minecraft-project-inspector.mjs\" PostToolUse",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

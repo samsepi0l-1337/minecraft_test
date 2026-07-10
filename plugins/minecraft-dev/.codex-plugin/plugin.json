@@ -1,0 +1,40 @@
+{
+  "name": "minecraft-dev",
+  "version": "0.1.0",
+  "description": "Repository-aware workflows for Minecraft Java mods, server plugins, proxy plugins, and cross-loader projects.",
+  "author": {
+    "name": "samsepi0l-1337",
+    "url": "https://github.com/samsepi0l-1337"
+  },
+  "homepage": "https://github.com/samsepi0l-1337/minecraft_test",
+  "repository": "https://github.com/samsepi0l-1337/minecraft_test",
+  "license": "CC0-1.0",
+  "keywords": [
+    "minecraft",
+    "fabric",
+    "forge",
+    "neoforge",
+    "paper",
+    "velocity"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Minecraft Development",
+    "shortDescription": "Build and verify Minecraft Java mods and plugins",
+    "longDescription": "Detect the active Minecraft Java ecosystem, load version-matched guidance, implement loader or server API changes, and verify artifacts without silently changing mappings or platform versions.",
+    "developerName": "samsepi0l-1337",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/samsepi0l-1337/minecraft_test",
+    "defaultPrompt": [
+      "Detect this Minecraft project and implement the requested mod or plugin change",
+      "Plan a compatible multi-loader Minecraft feature",
+      "Verify this Minecraft mod or server plugin build"
+    ]
+  }
+}

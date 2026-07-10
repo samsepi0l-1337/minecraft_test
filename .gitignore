@@ -8,12 +8,57 @@
 build/
 out/
 
+# Maven / Node tooling
+target/
+node_modules/
+coverage/
+
+# Public Codex marketplace metadata (overrides user-level ignores)
+!.agents/
+!.agents/plugins/
+!.agents/plugins/marketplace.json
+
 # IDE
 .idea/
+.cursor/
 *.iml
 .vscode/
 *.ipr
 *.iws
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.jks
+*.keystore
+*.p12
+
+# Minecraft client/server runtime
+run/
+runs/
+logs/
+*.log
+hs_err_pid*.log
+crash-reports/
+world/
+world_nether/
+world_the_end/
+worlds/
+eula.txt
+server.properties
+usercache.json
+whitelist.json
+ops.json
+banned-players.json
+banned-ips.json
+.paper-remapped/
+
+# Generated or decompiled game content
+decompiled/
+minecraft-source/
+minecraft-sources/
 
 # OS
 .DS_Store

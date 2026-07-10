@@ -2,57 +2,83 @@
 
 ## Goal
 
-Package the repository's Minecraft Fabric 1.21.1 development workflow as a public, repo-local Codex plugin. The plugin must provide MCP connections, a reusable skill, specialist agents, lifecycle hooks, and installation metadata without committing credentials.
+Package a public, repo-local Codex plugin that can safely start, extend, debug, test, and package Minecraft Java Edition mods and server/proxy plugins across the major maintained ecosystems. The plugin must provide MCP connections, progressive-disclosure guidance, specialist agents, lifecycle hooks, and installation metadata without committing credentials or silently migrating an existing project.
+
+## Supported ecosystems
+
+The configuration covers these project families and routes by repository evidence:
+
+- Mods: Fabric, Quilt, Forge, NeoForge, and shared/cross-loader projects such as Architectury-style layouts.
+- Server plugins: Bukkit, Spigot, Paper, Purpur, and Folia.
+- Proxy plugins: Velocity, BungeeCord, and Waterfall-compatible projects.
+- Hybrid/plugin platforms: Sponge.
+- Build layouts: Gradle Groovy/Kotlin DSL, Maven, single-project, and multi-project repositories.
+
+The current repository remains a Fabric 1.21.1 project. Support for other ecosystems is added to the agent package, not to the production mod's dependencies or source tree.
 
 ## Chosen approach
 
-Use one repo-local plugin named `minecraft-fabric-dev` under `plugins/`, surfaced by a repository marketplace under `.agents/plugins/marketplace.json`.
+Use one repo-local plugin named `minecraft-dev` under `plugins/`, surfaced by `.agents/plugins/marketplace.json`. Give it one routing skill, `minecraft-java-development`, whose small main workflow detects the project before loading exactly one relevant reference file.
 
-This is preferred over a personal plugin because every clone receives the same versioned workflow. It is preferred over unrelated top-level config files because the plugin keeps its MCP, skill, agents, hooks, scripts, and metadata within one installable boundary.
+This is preferred over separate plugins because cross-loader and server/proxy work often spans several modules. It is preferred over a monolithic skill because Fabric, Forge-family, Paper-family, proxies, and Sponge have incompatible mappings, lifecycle APIs, manifests, schedulers, and test commands.
 
 ## Components
 
-- MCP: connect to Context7 for version-aware documentation discovery and GitHub's official remote MCP server for repository and CI context. Treat Context7 as an index, then confirm implementation-sensitive claims against Fabric's official documentation.
-- Skill: `minecraft-fabric-mod` reads the repository's declared Minecraft, Loader, Loom, Fabric API, mapping, and Java versions before editing. It preserves common/client source-set boundaries and requires test/build evidence.
-- Agents: provide separate planning, implementation, and verification roles. Each role reports concrete files, commands, and unresolved risks instead of assuming a Minecraft or mapping version.
-- Hooks: inject the detected Fabric/Java context at session start and statically validate required project metadata at stop time. Hooks stay fast and do not launch the Minecraft client.
-- Marketplace/plugin metadata: make the plugin installable from the repository and discoverable in the Codex app.
-- Repository guidance: add a concise root `AGENTS.md` and `README.md` so the essential rules and install steps remain visible even before plugin installation.
+- MCP: connect to Context7 for documentation discovery and GitHub's official read-only remote MCP server for repository, pull request, action, and CI context. Context7 is advisory; implementation-sensitive claims are confirmed against the selected ecosystem's official documentation.
+- Skill: `minecraft-java-development` detects ecosystem, Minecraft/API version, JDK target, build system, mappings, source sets/modules, and manifests before edits. It loads one of `fabric`, `quilt`, `forge`, `neoforge`, `paper`, `proxy`, `sponge`, `cross-loader`, or `testing` references only when needed.
+- Agents: separate project exploration, mod implementation, plugin/proxy implementation, compatibility architecture, and independent verification.
+- Hooks: inject detected project facts at session start and refresh them after relevant build/manifest edits. Hooks stay fast, fail open, dependency-free, and never accept an EULA or launch a game/server automatically.
+- Marketplace/plugin metadata: make the complete package installable from a clone and discoverable in the Codex app.
+- Repository guidance: add concise root `AGENTS.md` and `README.md` files so safety and install rules remain visible before plugin installation.
+
+## Detection contract
+
+The inspector walks upward from the working directory and records only evidence it can read:
+
+- Fabric: `fabric.mod.json`, Fabric Loom plugin IDs, Fabric Loader/API coordinates.
+- Quilt: `quilt.mod.json`, Quilt Loom/Loader/QSL coordinates.
+- Forge: `META-INF/mods.toml`, ForgeGradle, `net.minecraftforge` coordinates.
+- NeoForge: `META-INF/neoforge.mods.toml` or `META-INF/mods.toml`, ModDevGradle/NeoGradle, `net.neoforged` coordinates.
+- Paper family: `plugin.yml` or `paper-plugin.yml`, Paper/Spigot/Bukkit/Purpur/Folia API coordinates.
+- Velocity: `velocity-plugin.json` or Velocity API/annotation processor coordinates.
+- Bungee/Waterfall: `bungee.yml` and proxy API coordinates.
+- Sponge: `META-INF/sponge_plugins.json` and Sponge API coordinates.
+- Cross-loader: multiple loader manifests, `common` plus loader-specific modules, or Architectury plugin/coordinates.
+
+Ambiguous evidence is reported as multiple candidates. The plugin never guesses a loader, mappings namespace, Minecraft version, server scheduler model, or Java target.
 
 ## Data and control flow
 
-1. Codex loads the repository marketplace and installs `minecraft-fabric-dev`.
-2. The session-start hook walks upward from the working directory to find `gradle.properties`, `build.gradle`, and `fabric.mod.json`, then emits the detected target versions as context.
-3. Minecraft/Fabric requests trigger the skill or one of the specialist agents.
-4. Documentation lookup may use Context7, but source-sensitive decisions are checked against the matching version of Fabric's official docs.
-5. The implementation workflow runs targeted tests, then `./gradlew check` and `./gradlew build`.
-6. The stop hook rejects malformed or inconsistent Fabric metadata without running an expensive full build.
+1. Codex installs `minecraft-dev` from the repository marketplace.
+2. The session-start hook detects build files and manifests, then emits the observed ecosystem, versions, Java target, mappings clues, and modules.
+3. A Minecraft request triggers `minecraft-java-development` or a specialist agent.
+4. The skill reads the matching reference, official versioned documentation, and current project configuration before planning changes.
+5. Implementation stays inside the detected loader/platform boundaries and writes a regression test appropriate to that platform.
+6. Verification runs the repository wrapper (`gradlew`, `mvnw`) and existing project tasks rather than inventing commands. Client/game/server launches happen only when the requested behavior requires them.
+7. The post-edit hook re-runs detection only after a relevant file changes; complete manifest validation remains the responsibility of the project's real build because dependency-free hooks cannot fully parse every supported TOML/YAML dialect.
 
-## Security and reliability
+## Security and side-effect policy
 
-- Commit no token, API key, credential helper output, generated game files, Gradle caches, or run directories.
-- Configure GitHub MCP authentication only through `GITHUB_PAT_TOKEN`.
-- Use HTTPS MCP endpoints and a fixed allow-list of two servers.
-- Keep hook logic dependency-free by using Node.js built-ins only.
-- Validate plugin JSON, skill frontmatter, marketplace paths, hook commands, secret absence, hook behavior, Gradle checks, and the remapped JAR build before push.
+- Commit no token, API key, credential helper output, world/server data, generated game files, Gradle/Maven caches, run directories, logs, crash reports, or EULA acceptance.
+- Configure GitHub MCP authentication only through `GITHUB_PAT_TOKEN` and use its read-only endpoint; publish with explicit `git`/`gh` commands.
+- Use HTTPS MCP endpoints and a fixed allow-list of Context7 and GitHub.
+- Do not download or execute arbitrary community MCP servers, unpinned `npx` packages, or mod JARs as part of project detection.
+- Keep hook logic dependency-free with Node.js built-ins and do not print stdin, environment values, or file contents that may contain secrets.
+- Treat version upgrades, loader migrations, mapping changes, cross-loader conversions, EULA acceptance, and production server deployment as separate explicit tasks.
 
 ## Version policy
 
-The repository remains on Minecraft `1.21.1`, Java `21`, Mojang mappings, Loader `0.19.2`, Loom `1.16-SNAPSHOT`, and Fabric API `0.116.12+1.21.1` unless a separate migration is requested. "Latest" documentation or dependencies must never be substituted silently because Fabric documentation currently spans materially different Minecraft/JDK generations.
+Always take versions from the target repository and matching official documentation. Never copy the latest template into an older project. In this repository, preserve Minecraft `1.21.1`, Java `21`, Mojang mappings, Loader `0.19.2`, Loom `1.16-SNAPSHOT`, and Fabric API `0.116.12+1.21.1` unless a separate migration is requested.
 
 ## Testing strategy
 
-- Write a Node contract test before scaffolding; it must fail while the plugin is absent.
-- Add unit tests for project-root discovery, Gradle property parsing, metadata inspection, and session context rendering.
-- Run the hook against the real repository in session-start and stop modes.
-- Run the skill validator, JSON parsing checks, plugin installation/listing checks, `git diff --check`, `./gradlew check`, and `./gradlew build`.
-- Request an independent final review before committing the implementation.
+- Write a Node contract test before scaffolding; it must fail while `minecraft-dev` is absent.
+- Unit-test root discovery, property parsing, ecosystem evidence detection, ambiguity handling, current Fabric 1.21.1 rendering, and post-edit relevance filtering.
+- Fixture-test representative manifests for Fabric, Quilt, Forge, NeoForge, Paper, Velocity, Bungee, and Sponge without adding their build dependencies to this repository.
+- Run the inspector against the real repository and confirm it identifies only Fabric 1.21.1.
+- Run skill/plugin/JSON/YAML validation, secret and artifact scans, plugin installation/listing, `git diff --check`, `./gradlew check`, and `./gradlew build` before push.
+- Request an independent final review of ecosystem coverage, security boundaries, and validation evidence.
 
-## Official references
+## Primary reference policy
 
-- Fabric 1.21.1 project creation: https://docs.fabricmc.net/1.21.1/develop/getting-started/creating-a-project
-- Fabric 1.21.1 automated testing: https://docs.fabricmc.net/1.21.1/develop/automatic-testing
-- Fabric 1.21.1 data generation: https://docs.fabricmc.net/1.21.1/develop/data-generation/setup
-- Fabric Loom documentation: https://docs.fabricmc.net/develop/loom/
-- GitHub MCP Server: https://github.com/github/github-mcp-server
-- Context7 MCP: https://github.com/upstash/context7
+Each ecosystem reference links to its official documentation or official project repository. Context7 may locate a page but cannot be the final authority. Community-only platforms or compatibility layers are labeled as such; unsupported or abandoned projects are not presented as maintained defaults.
